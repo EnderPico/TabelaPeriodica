@@ -1,0 +1,24 @@
+# Periodic Table Web App - Backend Dependencies
+# Day 1: Basic FastAPI setup
+
+# Core FastAPI framework
+fastapi==0.104.1
+
+# ASGI server for running the application
+uvicorn[standard]==0.24.0
+
+# For handling form data and file uploads (needed for future features)
+python-multipart==0.0.6
+
+# For password hashing (needed for Day 3 login system)
+passlib[bcrypt]==1.7.4
+
+# For testing the API
+requests==2.31.0
+
+# For running the tests
+pytest==7.4.0
+
+# - sqlalchemy (Day 2: Database)
+# - python-jose[cryptography] (Day 3: JWT tokens)
+# - openai (Day 5: AI chat integration)
