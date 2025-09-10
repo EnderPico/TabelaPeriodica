@@ -2,19 +2,23 @@
 Periodic Table Web App - Backend API
 FastAPI application for serving periodic table element data
 
-This is Day 1 setup - basic API with mock data
+Day 2: SQLite database integration with SQLAlchemy ORM
 """
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy.orm import Session
 from typing import List, Dict, Any
 import uvicorn
+
+# Import our database models and functions
+from models import Element, get_db, create_tables, init_sample_data
 
 # Create FastAPI app instance
 app = FastAPI(
     title="Periodic Table API",
-    description="Backend API for the Periodic Table Web App",
-    version="1.0.0"
+    description="Backend API for the Periodic Table Web App - Day 2: Database Integration",
+    version="2.0.0"
 )
 
 # Add CORS middleware to allow frontend requests
@@ -27,51 +31,26 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Mock data for elements - this will be replaced with database in Day 2
-MOCK_ELEMENTS = [
-    {
-        "atomic_number": 1,
-        "symbol": "H",
-        "name": "Hydrogen",
-        "atomic_mass": 1.008,
-        "period": 1,
-        "group": 1,
-        "category": "Nonmetal",
-        "description": "The lightest and most abundant element in the universe. Essential for water and organic compounds.",
-        "electron_configuration": "1s¹",
-        "melting_point": -259.16,
-        "boiling_point": -252.87,
-        "density": 0.00008988
-    },
-    {
-        "atomic_number": 6,
-        "symbol": "C",
-        "name": "Carbon",
-        "atomic_mass": 12.011,
-        "period": 2,
-        "group": 14,
-        "category": "Nonmetal",
-        "description": "The basis of all organic life. Forms millions of compounds and is essential for life on Earth.",
-        "electron_configuration": "[He] 2s² 2p²",
-        "melting_point": 3500,
-        "boiling_point": 4027,
-        "density": 2.267
-    },
-    {
-        "atomic_number": 8,
-        "symbol": "O",
-        "name": "Oxygen",
-        "atomic_mass": 15.999,
-        "period": 2,
-        "group": 16,
-        "category": "Nonmetal",
-        "description": "Essential for respiration and combustion. Makes up about 21% of Earth's atmosphere.",
-        "electron_configuration": "[He] 2s² 2p⁴",
-        "melting_point": -218.79,
-        "boiling_point": -182.95,
-        "density": 1.429
-    }
-]
+# Initialize database on startup
+@app.on_event("startup")
+async def startup_event():
+    """
+    Initialize database when the application starts
+    
+    This function runs once when the server starts up
+    It creates the database tables and adds sample data
+    """
+    print("🚀 Starting Periodic Table API...")
+    print("📊 Initializing database...")
+    
+    # Create database tables
+    create_tables()
+    
+    # Add sample data
+    init_sample_data()
+    
+    print("✅ Database initialization complete!")
+    print("🌐 API is ready at http://localhost:8000")
 
 @app.get("/")
 async def root():
@@ -80,7 +59,8 @@ async def root():
     """
     return {
         "message": "Periodic Table API is running!",
-        "version": "1.0.0",
+        "version": "2.0.0",
+        "database": "SQLite with SQLAlchemy ORM",
         "endpoints": {
             "elements": "/elements",
             "element_by_symbol": "/elements/{symbol}",
@@ -89,22 +69,30 @@ async def root():
     }
 
 @app.get("/elements", response_model=List[Dict[str, Any]])
-async def get_all_elements():
+async def get_all_elements(db: Session = Depends(get_db)):
     """
-    Get all elements from the periodic table
-    
-    Returns:
-        List of all elements with their properties
-    """
-    return MOCK_ELEMENTS
-
-@app.get("/elements/{symbol}", response_model=Dict[str, Any])
-async def get_element_by_symbol(symbol: str):
-    """
-    Get a specific element by its chemical symbol
+    Get all elements from the periodic table database
     
     Args:
-        symbol: The chemical symbol of the element (e.g., "H", "C", "O")
+        db: Database session (automatically provided by FastAPI)
+    
+    Returns:
+        List of all elements with their properties from the database
+    """
+    # Query all elements from the database
+    elements = db.query(Element).all()
+    
+    # Convert SQLAlchemy objects to dictionaries for JSON response
+    return [element.to_dict() for element in elements]
+
+@app.get("/elements/{symbol}", response_model=Dict[str, Any])
+async def get_element_by_symbol(symbol: str, db: Session = Depends(get_db)):
+    """
+    Get a specific element by its chemical symbol from the database
+    
+    Args:
+        symbol: The chemical symbol of the element (e.g., "H", "He", "C")
+        db: Database session (automatically provided by FastAPI)
     
     Returns:
         Element data if found
@@ -115,16 +103,17 @@ async def get_element_by_symbol(symbol: str):
     # Convert symbol to uppercase for case-insensitive search
     symbol_upper = symbol.upper()
     
-    # Search for element by symbol
-    for element in MOCK_ELEMENTS:
-        if element["symbol"].upper() == symbol_upper:
-            return element
+    # Query database for element with matching symbol (case-insensitive)
+    element = db.query(Element).filter(Element.symbol.ilike(symbol_upper)).first()
     
-    # If element not found, raise 404 error
-    raise HTTPException(
-        status_code=404, 
-        detail=f"Element with symbol '{symbol}' not found"
-    )
+    if element:
+        return element.to_dict()
+    else:
+        # If element not found, raise 404 error
+        raise HTTPException(
+            status_code=404, 
+            detail=f"Element with symbol '{symbol}' not found"
+        )
 
 @app.get("/health")
 async def health_check():

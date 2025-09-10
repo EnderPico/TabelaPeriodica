@@ -2,6 +2,8 @@
 
 A FastAPI backend for a high school IT class project featuring an interactive periodic table with flip cards, element information, and future chat/AI integration.
 
+**Day 2 Update**: Now includes SQLite database integration with SQLAlchemy ORM for persistent element data storage.
+
 ## 🚀 Quick Start
 
 ### Prerequisites
@@ -31,15 +33,23 @@ A FastAPI backend for a high school IT class project featuring an interactive pe
    - Interactive API Docs: http://localhost:8000/docs
    - Alternative Docs: http://localhost:8000/redoc
 
+### Database Setup
+
+The SQLite database is automatically created and initialized when you first run the server. No additional setup required!
+
+- **Database file**: `periodic_table.db` (created in project directory)
+- **Sample data**: Automatically includes Hydrogen and Helium
+- **Management**: Use `python manage_db.py` to add more elements
+
 ## 📚 API Endpoints
 
-### Day 1 - Basic Element Data
+### Day 2 - Database Integration
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
 | GET | `/` | API information and available endpoints |
-| GET | `/elements` | Get all elements (currently 3 mock elements) |
-| GET | `/elements/{symbol}` | Get specific element by symbol (e.g., "H", "C", "O") |
+| GET | `/elements` | Get all elements from SQLite database |
+| GET | `/elements/{symbol}` | Get specific element by symbol (e.g., "H", "He") |
 | GET | `/health` | Health check endpoint |
 
 ### Example API Responses
@@ -48,18 +58,18 @@ A FastAPI backend for a high school IT class project featuring an interactive pe
 ```json
 [
   {
-    "atomic_number": 1,
+    "id": 1,
     "symbol": "H",
     "name": "Hydrogen",
-    "atomic_mass": 1.008,
-    "period": 1,
-    "group": 1,
-    "category": "Nonmetal",
-    "description": "The lightest and most abundant element...",
-    "electron_configuration": "1s¹",
-    "melting_point": -259.16,
-    "boiling_point": -252.87,
-    "density": 0.00008988
+    "number": 1,
+    "info": "The lightest and most abundant element in the universe. Essential for water and organic compounds."
+  },
+  {
+    "id": 2,
+    "symbol": "He",
+    "name": "Helium",
+    "number": 2,
+    "info": "A noble gas that is lighter than air. Used in balloons and as a coolant for superconducting magnets."
   }
 ]
 ```
@@ -67,18 +77,11 @@ A FastAPI backend for a high school IT class project featuring an interactive pe
 **Get specific element** (`GET /elements/H`):
 ```json
 {
-  "atomic_number": 1,
+  "id": 1,
   "symbol": "H",
   "name": "Hydrogen",
-  "atomic_mass": 1.008,
-  "period": 1,
-  "group": 1,
-  "category": "Nonmetal",
-  "description": "The lightest and most abundant element...",
-  "electron_configuration": "1s¹",
-  "melting_point": -259.16,
-  "boiling_point": -252.87,
-  "density": 0.00008988
+  "number": 1,
+  "info": "The lightest and most abundant element in the universe. Essential for water and organic compounds."
 }
 ```
 
@@ -125,8 +128,8 @@ fetchElement('O');  // Get Oxygen
 
 ## 📅 Development Roadmap
 
-- **Day 1** ✅: Basic API with mock data (CURRENT)
-- **Day 2**: SQLite database integration with real periodic table data
+- **Day 1** ✅: Basic API with mock data
+- **Day 2** ✅: SQLite database integration with real periodic table data (CURRENT)
 - **Day 3**: User login and authentication system
 - **Day 4**: CRUD operations for updating element information
 - **Day 5**: Chat/AI bot integration
@@ -152,9 +155,54 @@ pip freeze > requirements.txt
 ```
 TabelaPeriodica/
 ├── main.py              # FastAPI application
+├── models.py            # SQLAlchemy database models
+├── manage_db.py         # Database management script
+├── test_api.py          # API testing script
 ├── requirements.txt     # Python dependencies
+├── periodic_table.db    # SQLite database (created automatically)
 └── README.md           # This file
 ```
+
+## 🗄️ Database Management
+
+### Adding Elements
+
+Use the database management script to add more elements:
+
+```bash
+python manage_db.py
+```
+
+This interactive script allows you to:
+- Add sample elements (Lithium, Carbon, Nitrogen, Oxygen, Fluorine)
+- Add custom elements with your own data
+- List all elements in the database
+- Reset the database if needed
+
+### Adding Elements Programmatically
+
+You can also add elements directly in Python:
+
+```python
+from models import add_element
+
+# Add a new element
+add_element(
+    symbol="Na",
+    name="Sodium", 
+    number=11,
+    info="Essential for nerve function and muscle contraction."
+)
+```
+
+### Database Schema
+
+The `Element` table has the following structure:
+- `id`: Primary key (auto-increment)
+- `symbol`: Chemical symbol (unique, e.g., "H", "He")
+- `name`: Full element name (e.g., "Hydrogen", "Helium")
+- `number`: Atomic number (e.g., 1, 2)
+- `info`: Description/information about the element
 
 ## 🤝 Team Collaboration
 
@@ -184,7 +232,10 @@ pip install -r requirements.txt
 
 ## 📝 Notes
 
-- This is Day 1 implementation with mock data
+- This is Day 2 implementation with SQLite database integration
 - CORS is configured for development (allows all origins)
-- Database integration will be added in Day 2
+- Database is automatically created and initialized on first run
+- Case-insensitive element symbol search (e.g., "h", "H", "he", "He" all work)
 - Authentication will be added in Day 3
+- Use `python manage_db.py` to easily add more elements
+- SQLAlchemy 2.0.43 for Python 3.13 compatibility

@@ -19,6 +19,8 @@ requests==2.31.0
 # For running the tests
 pytest==7.4.0
 
-# - sqlalchemy (Day 2: Database)
+# Day 2: Database integration
+sqlalchemy==2.0.43
+
 # - python-jose[cryptography] (Day 3: JWT tokens)
 # - openai (Day 5: AI chat integration)

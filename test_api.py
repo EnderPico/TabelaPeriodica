@@ -1,6 +1,6 @@
 """
-Test script for the Periodic Table API
-Run this after starting the server to verify everything works
+Test script for the Periodic Table API - Day 2 Database Version
+Run this after starting the server to verify everything works with the database
 """
 
 import requests
@@ -40,7 +40,7 @@ def test_api():
         print()
         
         # Test get specific elements
-        test_symbols = ["H", "C", "O", "INVALID"]
+        test_symbols = ["H", "He", "INVALID"]
         
         for symbol in test_symbols:
             print(f"4. Testing get element '{symbol}'...")
@@ -50,8 +50,8 @@ def test_api():
             if response.status_code == 200:
                 element = response.json()
                 print(f"   Found: {element['name']} ({element['symbol']})")
-                print(f"   Atomic Number: {element['atomic_number']}")
-                print(f"   Category: {element['category']}")
+                print(f"   Atomic Number: {element['number']}")
+                print(f"   Info: {element['info'][:50]}...")
             else:
                 print(f"   Error: {response.json()}")
             print()
