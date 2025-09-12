@@ -50,6 +50,40 @@ class Element(Base):
             "info": self.info
         }
 
+class User(Base):
+    """
+    User model for authentication and authorization
+    
+    This model stores user account information including
+    username, hashed password, and role for access control
+    """
+    __tablename__ = "users"
+    
+    # Primary key - unique identifier for each user
+    id = Column(Integer, primary_key=True, index=True)
+    
+    # Username - must be unique
+    username = Column(String(50), unique=True, index=True, nullable=False)
+    
+    # Password hash - stores bcrypt hashed password
+    password_hash = Column(String(255), nullable=False)
+    
+    # User role - determines access permissions
+    # "admin" can perform CRUD operations, "student" can only read
+    role = Column(String(20), nullable=False, default="student")
+    
+    def __repr__(self):
+        """String representation of the user for debugging"""
+        return f"<User(username='{self.username}', role='{self.role}')>"
+    
+    def to_dict(self):
+        """Convert user to dictionary for JSON serialization (without password)"""
+        return {
+            "id": self.id,
+            "username": self.username,
+            "role": self.role
+        }
+
 # Database configuration
 DATABASE_URL = "sqlite:///./periodic_table.db"
 
@@ -161,6 +195,56 @@ def init_sample_data():
         
     except Exception as e:
         print(f"❌ Error initializing sample data: {e}")
+        raise e
+    finally:
+        db.close()
+
+def create_admin_user(username: str = "admin", password: str = "admin123", role: str = "admin"):
+    """
+    Create an admin user for testing and initial setup
+    
+    Args:
+        username (str): Admin username (default: "admin")
+        password (str): Admin password (default: "admin123")
+        role (str): User role (default: "admin")
+    
+    Returns:
+        User: The created admin user
+    """
+    from passlib.context import CryptContext
+    
+    # Create password context for hashing
+    pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+    
+    db = SessionLocal()
+    try:
+        # Check if admin user already exists
+        existing_admin = db.query(User).filter(User.username == username).first()
+        if existing_admin:
+            print(f"👤 Admin user '{username}' already exists")
+            return existing_admin
+        
+        # Create new admin user
+        admin_user = User(
+            username=username,
+            password_hash=pwd_context.hash(password),
+            role=role
+        )
+        
+        # Add to database
+        db.add(admin_user)
+        db.commit()
+        db.refresh(admin_user)
+        
+        print(f"✅ Created admin user: {username} (role: {role})")
+        print(f"   Username: {username}")
+        print(f"   Password: {password}")
+        print(f"   Role: {role}")
+        return admin_user
+        
+    except Exception as e:
+        db.rollback()
+        print(f"❌ Error creating admin user: {e}")
         raise e
     finally:
         db.close()

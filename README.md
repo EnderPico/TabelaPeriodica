@@ -2,7 +2,7 @@
 
 A FastAPI backend for a high school IT class project featuring an interactive periodic table with flip cards, element information, and future chat/AI integration.
 
-**Day 3.9 Update**: Now includes full CRUD operations for element management with Pydantic validation and comprehensive error handling.
+**Day 3.5 Update**: Now includes JWT-based authentication with role-based access control. Admin users can perform CRUD operations, while students can only read element data.
 
 ## 🚀 Quick Start
 
@@ -39,21 +39,38 @@ The SQLite database is automatically created and initialized when you first run 
 
 - **Database file**: `periodic_table.db` (created in project directory)
 - **Sample data**: Automatically includes Hydrogen and Helium
+- **Admin user**: Automatically created (username: `admin`, password: `admin123`)
 - **Management**: Use `python manage_db.py` to add more elements
+
+### Authentication Setup
+
+The system automatically creates an admin user on first run:
+- **Username**: `admin`
+- **Password**: `admin123`
+- **Role**: `admin` (can perform all CRUD operations)
+
+You can register additional users via the `/register` endpoint.
 
 ## 📚 API Endpoints
 
-### Day 3.9 - Full CRUD Operations
+### Day 3.5 - Authentication + CRUD Operations
 
+#### Public Endpoints (No Authentication Required)
 | Method | Endpoint | Description |
 |--------|----------|-------------|
 | GET | `/` | API information and available endpoints |
 | GET | `/elements` | Get all elements from SQLite database |
 | GET | `/elements/{symbol}` | Get specific element by symbol (case-insensitive) |
-| POST | `/elements` | Create a new element |
-| PUT | `/elements/{symbol}` | Update an existing element |
-| DELETE | `/elements/{symbol}` | Delete an element by symbol |
+| POST | `/register` | Register a new user account |
+| POST | `/login` | Login and get JWT token |
 | GET | `/health` | Health check endpoint |
+
+#### Admin-Only Endpoints (Requires JWT Token + Admin Role)
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/elements` | Create a new element (Admin only) |
+| PUT | `/elements/{symbol}` | Update an existing element (Admin only) |
+| DELETE | `/elements/{symbol}` | Delete an element by symbol (Admin only) |
 
 ### Example API Responses
 
@@ -124,25 +141,84 @@ The SQLite database is automatically created and initialized when you first run 
 }
 ```
 
-## 🧪 Testing CRUD Operations
+**Register user** (`POST /register`):
+```json
+{
+  "message": "User 'student1' registered successfully",
+  "user": {
+    "id": 2,
+    "username": "student1",
+    "role": "student"
+  }
+}
+```
 
-### Using curl Commands
+**Login user** (`POST /login`):
+```json
+{
+  "message": "Login successful for user 'admin'",
+  "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "token_type": "bearer",
+  "expires_in": 1800,
+  "user": {
+    "id": 1,
+    "username": "admin",
+    "role": "admin"
+  }
+}
+```
 
-**1. Get all elements**:
+## 🧪 Testing Authentication & CRUD Operations
+
+### Authentication Testing
+
+**1. Register a new user**:
+```bash
+curl -X POST http://localhost:8000/register \
+  -H "Content-Type: application/json" \
+  -d '{
+    "username": "student1",
+    "password": "password123",
+    "role": "student"
+  }'
+```
+
+**2. Login as admin**:
+```bash
+curl -X POST http://localhost:8000/login \
+  -H "Content-Type: application/json" \
+  -d '{
+    "username": "admin",
+    "password": "admin123"
+  }'
+```
+
+**3. Save the JWT token from login response**:
+```bash
+# Copy the "access_token" value from the login response
+# Example: TOKEN="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+```
+
+### Public Endpoints (No Authentication)
+
+**4. Get all elements**:
 ```bash
 curl -X GET http://localhost:8000/elements
 ```
 
-**2. Get specific element**:
+**5. Get specific element**:
 ```bash
 curl -X GET http://localhost:8000/elements/H
 curl -X GET http://localhost:8000/elements/he  # Case-insensitive
 ```
 
-**3. Create new element**:
+### Admin-Only Endpoints (Requires JWT Token)
+
+**6. Create new element (Admin only)**:
 ```bash
 curl -X POST http://localhost:8000/elements \
   -H "Content-Type: application/json" \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN_HERE" \
   -d '{
     "symbol": "O",
     "name": "Oxygen",
@@ -151,31 +227,67 @@ curl -X POST http://localhost:8000/elements \
   }'
 ```
 
-**4. Update existing element**:
+**7. Update existing element (Admin only)**:
 ```bash
 curl -X PUT http://localhost:8000/elements/O \
   -H "Content-Type: application/json" \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN_HERE" \
   -d '{
     "info": "Updated description: Essential for life and combustion processes."
   }'
 ```
 
-**5. Delete element**:
+**8. Delete element (Admin only)**:
 ```bash
-curl -X DELETE http://localhost:8000/elements/O
+curl -X DELETE http://localhost:8000/elements/O \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN_HERE"
 ```
 
 ### Error Testing
 
-**Try to create duplicate element**:
+**Try to create element without authentication**:
 ```bash
 curl -X POST http://localhost:8000/elements \
   -H "Content-Type: application/json" \
   -d '{
-    "symbol": "H",
-    "name": "Hydrogen",
-    "number": 1,
-    "info": "This will fail - already exists"
+    "symbol": "O",
+    "name": "Oxygen",
+    "number": 8,
+    "info": "This will fail - no token"
+  }'
+```
+
+**Try to create element with invalid token**:
+```bash
+curl -X POST http://localhost:8000/elements \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer invalid_token" \
+  -d '{
+    "symbol": "O",
+    "name": "Oxygen",
+    "number": 8,
+    "info": "This will fail - invalid token"
+  }'
+```
+
+**Try to login with wrong credentials**:
+```bash
+curl -X POST http://localhost:8000/login \
+  -H "Content-Type: application/json" \
+  -d '{
+    "username": "admin",
+    "password": "wrongpassword"
+  }'
+```
+
+**Try to register duplicate username**:
+```bash
+curl -X POST http://localhost:8000/register \
+  -H "Content-Type: application/json" \
+  -d '{
+    "username": "admin",
+    "password": "password123",
+    "role": "student"
   }'
 ```
 
@@ -187,6 +299,77 @@ curl -X GET http://localhost:8000/elements/X
 ## 🔗 Frontend Integration
 
 ### JavaScript Fetch Examples
+
+**Authentication Helper**:
+```javascript
+// Store JWT token in localStorage
+function setAuthToken(token) {
+    localStorage.setItem('authToken', token);
+}
+
+function getAuthToken() {
+    return localStorage.getItem('authToken');
+}
+
+function clearAuthToken() {
+    localStorage.removeItem('authToken');
+}
+
+// Login function
+async function login(username, password) {
+    try {
+        const response = await fetch('http://localhost:8000/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ username, password })
+        });
+        
+        if (response.ok) {
+            const data = await response.json();
+            setAuthToken(data.access_token);
+            console.log('Login successful:', data);
+            return data;
+        } else {
+            const error = await response.json();
+            console.error('Login failed:', error);
+            throw new Error(error.detail);
+        }
+    } catch (error) {
+        console.error('Login error:', error);
+        throw error;
+    }
+}
+
+// Register function
+async function register(username, password, role = 'student') {
+    try {
+        const response = await fetch('http://localhost:8000/register', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ username, password, role })
+        });
+        
+        if (response.ok) {
+            const data = await response.json();
+            console.log('Registration successful:', data);
+            return data;
+        } else {
+            const error = await response.json();
+            console.error('Registration failed:', error);
+            throw new Error(error.detail);
+        }
+    } catch (error) {
+        console.error('Registration error:', error);
+        throw error;
+    }
+}
+```
+
+**Public Endpoints (No Authentication Required)**:
 
 **Get all elements**:
 ```javascript
@@ -220,14 +403,22 @@ async function fetchElement(symbol) {
 }
 ```
 
-**Create new element**:
+**Admin-Only Endpoints (Requires Authentication)**:
+
+**Create new element (Admin only)**:
 ```javascript
 async function createElement(elementData) {
+    const token = getAuthToken();
+    if (!token) {
+        throw new Error('No authentication token. Please login first.');
+    }
+    
     try {
         const response = await fetch('http://localhost:8000/elements', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
             },
             body: JSON.stringify(elementData)
         });
@@ -239,29 +430,45 @@ async function createElement(elementData) {
         } else {
             const error = await response.json();
             console.error('Error creating element:', error);
+            throw new Error(error.detail);
         }
     } catch (error) {
         console.error('Error creating element:', error);
+        throw error;
     }
 }
 
 // Usage example:
-createElement({
-    symbol: "N",
-    name: "Nitrogen",
-    number: 7,
-    info: "Makes up 78% of Earth's atmosphere. Essential for proteins and DNA."
-});
+// First login as admin, then create element
+async function exampleCreateElement() {
+    try {
+        await login('admin', 'admin123');
+        await createElement({
+            symbol: "N",
+            name: "Nitrogen",
+            number: 7,
+            info: "Makes up 78% of Earth's atmosphere. Essential for proteins and DNA."
+        });
+    } catch (error) {
+        console.error('Failed to create element:', error);
+    }
+}
 ```
 
-**Update element**:
+**Update element (Admin only)**:
 ```javascript
 async function updateElement(symbol, updateData) {
+    const token = getAuthToken();
+    if (!token) {
+        throw new Error('No authentication token. Please login first.');
+    }
+    
     try {
         const response = await fetch(`http://localhost:8000/elements/${symbol}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
             },
             body: JSON.stringify(updateData)
         });
@@ -273,22 +480,40 @@ async function updateElement(symbol, updateData) {
         } else {
             const error = await response.json();
             console.error('Error updating element:', error);
+            throw new Error(error.detail);
         }
     } catch (error) {
         console.error('Error updating element:', error);
+        throw error;
     }
 }
 
 // Usage example:
-updateElement("N", { info: "Updated description for Nitrogen" });
+// First login as admin, then update element
+async function exampleUpdateElement() {
+    try {
+        await login('admin', 'admin123');
+        await updateElement("N", { info: "Updated description for Nitrogen" });
+    } catch (error) {
+        console.error('Failed to update element:', error);
+    }
+}
 ```
 
-**Delete element**:
+**Delete element (Admin only)**:
 ```javascript
 async function deleteElement(symbol) {
+    const token = getAuthToken();
+    if (!token) {
+        throw new Error('No authentication token. Please login first.');
+    }
+    
     try {
         const response = await fetch(`http://localhost:8000/elements/${symbol}`, {
-            method: 'DELETE'
+            method: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
         });
         
         if (response.ok) {
@@ -298,25 +523,35 @@ async function deleteElement(symbol) {
         } else {
             const error = await response.json();
             console.error('Error deleting element:', error);
+            throw new Error(error.detail);
         }
     } catch (error) {
         console.error('Error deleting element:', error);
+        throw error;
     }
 }
 
 // Usage example:
-deleteElement("N");
+// First login as admin, then delete element
+async function exampleDeleteElement() {
+    try {
+        await login('admin', 'admin123');
+        await deleteElement("N");
+    } catch (error) {
+        console.error('Failed to delete element:', error);
+    }
+}
 ```
 
 ## 📅 Development Roadmap
 
 - **Day 1** ✅: Basic API with mock data
 - **Day 2** ✅: SQLite database integration with real periodic table data
-- **Day 3.9** ✅: Full CRUD operations for element management (CURRENT)
-- **Day 4**: User login and authentication system (restrict CRUD to admin users)
-- **Day 5**: Chat/AI bot integration
-- **Day 6**: Integration testing and polish
-- **Day 7**: Presentation preparation
+- **Day 3.0** ✅: Full CRUD operations for element management
+- **Day 3.5** ✅: JWT authentication with role-based access control (CURRENT)
+- **Day 4**: Chat/AI bot integration
+- **Day 5**: Integration testing and polish
+- **Day 6**: Presentation preparation
 
 ## 🛠️ Development Commands
 
@@ -342,9 +577,10 @@ pip freeze > requirements.txt
 
 ```
 TabelaPeriodica/
-├── main.py              # FastAPI application with CRUD endpoints
-├── models.py            # SQLAlchemy database models
-├── schemas.py           # Pydantic schemas for request/response validation
+├── main.py              # FastAPI application with authentication & CRUD
+├── models.py            # SQLAlchemy database models (Element, User)
+├── schemas.py           # Pydantic schemas for validation
+├── auth.py              # Authentication & JWT functions
 ├── manage_db.py         # Database management script
 ├── test_api.py          # Basic API testing script
 ├── test_crud.py         # Comprehensive CRUD testing script
@@ -422,12 +658,14 @@ pip install -r requirements.txt
 
 ## 📝 Notes
 
-- This is Day 3.9 implementation with full CRUD operations
+- This is Day 3.5 implementation with JWT authentication and role-based access control
 - CORS is configured for development (allows all origins)
 - Database is automatically created and initialized on first run
 - Case-insensitive element symbol search (e.g., "h", "H", "he", "He" all work)
 - Pydantic validation ensures data integrity
 - Duplicate symbol/atomic number prevention
-- Authentication will be added in Day 4
+- JWT tokens expire after 30 minutes
+- Admin users can perform CRUD operations, students can only read
+- Default admin account: username="admin", password="admin123"
 - Use `python manage_db.py` to easily add more elements
 - SQLAlchemy 2.0.43 for Python 3.13 compatibility

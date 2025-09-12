@@ -22,5 +22,7 @@ pytest==7.4.0
 # Day 2: Database integration
 sqlalchemy==2.0.43
 
-# - python-jose[cryptography] (Day 3: JWT tokens)
+# Day 3.5: Authentication and JWT tokens
+python-jose[cryptography]==3.3.0
+
 # - openai (Day 5: AI chat integration)

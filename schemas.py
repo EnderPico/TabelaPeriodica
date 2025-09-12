@@ -108,3 +108,88 @@ class ErrorResponse(BaseModel):
     """
     detail: str = Field(..., description="Error message")
     error_type: Optional[str] = Field(None, description="Type of error")
+
+# User Authentication Schemas
+
+class UserBase(BaseModel):
+    """
+    Base schema for user data
+    Contains common fields for user operations
+    """
+    username: str = Field(..., min_length=3, max_length=50, description="Username (3-50 characters)")
+    role: str = Field(default="student", description="User role (admin or student)")
+
+class UserCreate(UserBase):
+    """
+    Schema for user registration
+    Used in POST /register endpoint
+    """
+    password: str = Field(..., min_length=6, max_length=100, description="Password (6-100 characters)")
+    
+    @validator('username')
+    def username_must_be_valid(cls, v):
+        """Validate username contains only alphanumeric characters and underscores"""
+        if not v.replace('_', '').isalnum():
+            raise ValueError('Username must contain only letters, numbers, and underscores')
+        return v.lower()  # Convert to lowercase for consistency
+    
+    @validator('role')
+    def role_must_be_valid(cls, v):
+        """Validate role is either admin or student"""
+        if v not in ["admin", "student"]:
+            raise ValueError('Role must be either "admin" or "student"')
+        return v
+
+class UserLogin(BaseModel):
+    """
+    Schema for user login
+    Used in POST /login endpoint
+    """
+    username: str = Field(..., description="Username")
+    password: str = Field(..., description="Password")
+
+class UserResponse(UserBase):
+    """
+    Schema for user responses
+    Used to return user data without password
+    """
+    id: int = Field(..., description="User ID")
+    
+    class Config:
+        """Pydantic configuration for the response model"""
+        from_attributes = True  # Allows conversion from SQLAlchemy models
+
+class Token(BaseModel):
+    """
+    Schema for JWT token response
+    Used in POST /login endpoint
+    """
+    access_token: str = Field(..., description="JWT access token")
+    token_type: str = Field(default="bearer", description="Token type")
+    expires_in: int = Field(..., description="Token expiration time in seconds")
+
+class TokenData(BaseModel):
+    """
+    Schema for token data
+    Used internally for JWT token validation
+    """
+    username: Optional[str] = None
+
+class UserRegisterResponse(BaseModel):
+    """
+    Schema for user registration response
+    Used in POST /register endpoint
+    """
+    message: str = Field(..., description="Success message")
+    user: UserResponse = Field(..., description="Created user data")
+
+class LoginResponse(BaseModel):
+    """
+    Schema for login response
+    Used in POST /login endpoint
+    """
+    message: str = Field(..., description="Success message")
+    access_token: str = Field(..., description="JWT access token")
+    token_type: str = Field(default="bearer", description="Token type")
+    expires_in: int = Field(..., description="Token expiration time in seconds")
+    user: UserResponse = Field(..., description="User data")
