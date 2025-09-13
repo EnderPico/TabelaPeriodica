@@ -553,6 +553,128 @@ async function exampleDeleteElement() {
 - **Day 5**: Integration testing and polish
 - **Day 6**: Presentation preparation
 
+## 🧪 Testing
+
+### Automated Testing with pytest
+
+The project includes comprehensive automated tests using pytest. All tests are organized in the `tests/` directory.
+
+#### Running Tests
+
+**Run all tests**:
+```bash
+pytest -v
+```
+
+**Run specific test modules**:
+```bash
+# Test database operations
+pytest tests/test_database.py -v
+
+# Test API endpoints
+pytest tests/test_elements.py -v
+
+# Test authentication system
+pytest tests/test_auth.py -v
+
+# Test user roles and permissions
+pytest tests/test_user_roles.py -v
+
+# Test edge cases and error handling
+pytest tests/test_edge_cases.py -v
+```
+
+**Run tests with coverage**:
+```bash
+# Install coverage tool
+pip install pytest-cov
+
+# Run tests with coverage report
+pytest --cov=. --cov-report=html
+
+# View coverage report
+open htmlcov/index.html
+```
+
+#### Test Structure
+
+The test suite is organized into focused modules:
+
+- **`tests/conftest.py`**: Shared test fixtures and configuration
+- **`tests/test_database.py`**: SQLite database and SQLAlchemy model tests
+- **`tests/test_elements.py`**: Elements API endpoint tests (GET, POST, PUT, DELETE)
+- **`tests/test_auth.py`**: Authentication system tests (registration, login, JWT)
+- **`tests/test_user_roles.py`**: Role-based access control tests (admin vs student)
+- **`tests/test_edge_cases.py`**: Edge cases, boundary conditions, and error handling
+
+#### Test Features
+
+✅ **Database Tests**:
+- Model creation and validation
+- Unique constraints (symbol, username)
+- Helper function testing
+- Query operations
+
+✅ **API Tests**:
+- All CRUD operations
+- Authentication requirements
+- Error handling
+- Case-insensitive searches
+
+✅ **Authentication Tests**:
+- Password hashing and verification
+- JWT token creation and validation
+- User registration and login
+- Token-based access control
+
+✅ **Role-Based Access Tests**:
+- Admin permissions (full CRUD access)
+- Student permissions (read-only access)
+- Unauthenticated access restrictions
+
+✅ **Edge Case Tests**:
+- Boundary value testing
+- Invalid input handling
+- Concurrent operations
+- Error recovery
+
+#### Test Configuration
+
+Tests use an in-memory SQLite database for isolation and speed. Each test runs in a clean environment with:
+- Fresh database tables
+- Sample data fixtures
+- Admin and student user accounts
+- JWT tokens for authentication testing
+
+### Manual Testing
+
+#### Quick API Test
+
+**Test basic functionality**:
+```bash
+# Get all elements
+curl http://localhost:8000/elements
+
+# Get specific element
+curl http://localhost:8000/elements/H
+
+# Register new user
+curl -X POST http://localhost:8000/register \
+  -H "Content-Type: application/json" \
+  -d '{"username": "testuser", "password": "password123", "role": "student"}'
+
+# Login as admin
+curl -X POST http://localhost:8000/login \
+  -H "Content-Type: application/json" \
+  -d '{"username": "admin", "password": "admin123"}'
+```
+
+#### Interactive Testing
+
+**Use the interactive API documentation**:
+- Swagger UI: http://localhost:8000/docs
+- ReDoc: http://localhost:8000/redoc
+
 ## 🛠️ Development Commands
 
 ```bash
@@ -562,11 +684,20 @@ uvicorn main:app --reload
 # Run on specific host and port
 uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 
-# Test basic API functionality
-python test_api.py
+# Run all tests
+pytest -v
 
-# Test comprehensive CRUD operations
-python test_crud.py
+# Run tests with coverage
+pytest --cov=. --cov-report=html
+
+# Run specific test file
+pytest tests/test_elements.py -v
+
+# Test basic API functionality (legacy)
+python tests/test_api.py
+
+# Test comprehensive CRUD operations (legacy)
+python tests/test_crud.py
 
 # Install new dependencies
 pip install package-name
@@ -582,10 +713,17 @@ TabelaPeriodica/
 ├── schemas.py           # Pydantic schemas for validation
 ├── auth.py              # Authentication & JWT functions
 ├── manage_db.py         # Database management script
-├── test_api.py          # Basic API testing script
-├── test_crud.py         # Comprehensive CRUD testing script
 ├── requirements.txt     # Python dependencies
 ├── periodic_table.db    # SQLite database (created automatically)
+├── tests/               # Comprehensive test suite
+│   ├── conftest.py      # Shared test fixtures and configuration
+│   ├── test_database.py # Database and SQLAlchemy model tests
+│   ├── test_elements.py # Elements API endpoint tests
+│   ├── test_auth.py     # Authentication system tests
+│   ├── test_user_roles.py # Role-based access control tests
+│   ├── test_edge_cases.py # Edge cases and error handling tests
+│   ├── test_api.py      # Legacy basic API testing script
+│   └── test_crud.py     # Legacy CRUD testing script
 └── README.md           # This file
 ```
 
