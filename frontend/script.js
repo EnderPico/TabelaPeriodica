@@ -99,8 +99,8 @@ async function handleElementClick(elementCard, symbol) {
         const elementData = await fetchElementData(symbol);
         
         if (elementData) {
-            // Update card back with detailed information
-            updateOverlayCardBack(elementData);
+            // Update card back with detailed information, including atomic mass from original card
+            updateOverlayCardBack(elementData, atomicMass);
             
             // Flip to show back face after a short delay
             setTimeout(() => {
@@ -178,12 +178,12 @@ function showOverlayBackdrop() {
 /**
  * Update overlay card back with detailed element data
  */
-function updateOverlayCardBack(elementData) {
+function updateOverlayCardBack(elementData, atomicMass) {
     overlayCardBack.innerHTML = `
         <div class="overlay-atomic-number">${elementData.number}</div>
         <div class="overlay-symbol">${elementData.symbol}</div>
         <div class="overlay-name">${elementData.name}</div>
-        <div class="overlay-atomic-mass">${elementData.atomic_mass || 'N/A'}</div>
+        <div class="overlay-atomic-mass">${atomicMass}</div>
         <div class="overlay-description">${elementData.info || 'Informações detalhadas não disponíveis.'}</div>
     `;
     
