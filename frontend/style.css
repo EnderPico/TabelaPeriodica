@@ -1,0 +1,480 @@
+/* Reset and base styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Arial', sans-serif;
+}
+
+/* Body and layout styles */
+body {
+    padding: 20px;
+    background-color: #f5f5f5;
+}
+
+.container {
+    max-width: 1600px;
+    margin: 0 auto;
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+/* Periodic table grid layout */
+.periodic-table {
+    display: grid;
+    grid-template-columns: repeat(18, 1fr);
+    grid-gap: 4px;
+    margin-bottom: 30px;
+}
+
+.element {
+    padding: 8px 4px;
+    border-radius: 4px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 70px;
+    perspective: 1000px; /* Enable 3D transforms */
+}
+
+.element:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    z-index: 10;
+}
+
+.atomic-number {
+    font-size: 12px;
+    text-align: left;
+    margin-bottom: 4px;
+}
+
+.symbol {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 2px;
+}
+
+.name {
+    font-size: 10px;
+    margin-bottom: 4px;
+}
+
+.atomic-mass {
+    font-size: 10px;
+}
+
+/* Flip card animation styles */
+.flip-card {
+    background-color: transparent;
+    width: 100%;
+    height: 100%;
+    perspective: 1000px;
+}
+
+.flip-card-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    transition: transform 0.6s;
+    transform-style: preserve-3d;
+}
+
+.element.flipped .flip-card-inner {
+    transform: rotateY(180deg);
+}
+
+.flip-card-front, .flip-card-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    border-radius: 4px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 8px 4px;
+}
+
+.flip-card-back {
+    transform: rotateY(180deg);
+    background-color: rgba(255, 255, 255, 0.9);
+    color: #333;
+}
+
+.loading {
+    font-size: 10px;
+    color: #666;
+    font-style: italic;
+}
+
+/* Element category colors - each chemical group has its own color */
+.metal-alcalino {
+    background-color: #00AA83; /* Verde escuro */
+    color: white;
+}
+
+.metal-alcalino-terroso {
+    background-color: #A44F4F; /* Vermelho vinho */
+    color: white;
+}
+
+.metal-transicao {
+    background-color: #8665A2; /* Roxo */
+    color: white;
+}
+
+.metal-pos-transicao {
+    background-color: #4C926E; /* Verde claro */
+    color: white;
+}
+
+.semimetal {
+    background-color: #8C7808; /* Dourado escuro */
+    color: white;
+}
+
+.ametal {
+    background-color: #227EA2; /* Azul escuro */
+    color: white;
+}
+
+.gas-nobre {
+    background-color: #C06C6C; /* Rosa salmão */
+    color: white;
+}
+
+.lantanideo {
+    background-color: #026E99; /* Azul */
+    color: white;
+}
+
+.actinideo {
+    background-color: #C9802D; /* Laranja */
+    color: white;
+}
+
+.propriedade-desconhecida {
+    background-color: #7D7D7D; /* Cinza */
+    color: white;
+}
+
+.empty {
+    background-color: transparent;
+    box-shadow: none;
+    cursor: default;
+}
+
+.empty:hover {
+    transform: none;
+    box-shadow: none;
+}
+
+/* Lanthanides and Actinides grid layout */
+.lantanideos-actinideos {
+    display: grid;
+    grid-template-columns: repeat(15, 1fr);
+    grid-gap: 4px;
+    margin-top: 20px;
+}
+
+/* Legend layout */
+.legenda {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+    margin-top: 30px;
+}
+
+.legenda-item {
+    display: flex;
+    align-items: center;
+    margin-right: 15px;
+}
+
+.legenda-cor {
+    width: 20px;
+    height: 20px;
+    margin-right: 5px;
+    border-radius: 3px;
+}
+
+/* Legend color styles for each element category */
+.legenda-cor.metal-alcalino {
+    background-color: #00AA83;
+}
+
+.legenda-cor.metal-alcalino-terroso {
+    background-color: #A44F4F;
+}
+
+.legenda-cor.metal-transicao {
+    background-color: #8665A2;
+}
+
+.legenda-cor.metal-pos-transicao {
+    background-color: #4C926E;
+}
+
+.legenda-cor.semimetal {
+    background-color: #8C7808;
+}
+
+.legenda-cor.ametal {
+    background-color: #227EA2;
+}
+
+.legenda-cor.gas-nobre {
+    background-color: #C06C6C;
+}
+
+.legenda-cor.lantanideo {
+    background-color: #026E99;
+}
+
+.legenda-cor.actinideo {
+    background-color: #A37138;
+}
+
+.legenda-cor.propriedade-desconhecida {
+    background-color: #7D7D7D;
+}
+
+/* Responsive design for tablets */
+@media (max-width: 1200px) {
+    .periodic-table {
+        grid-template-columns: repeat(9, 1fr);
+    }
+    
+    .element {
+        min-height: 60px;
+    }
+    
+    .symbol {
+        font-size: 16px;
+    }
+    
+    .name {
+        font-size: 8px;
+    }
+}
+
+/* Overlay backdrop for duplicate cards */
+.overlay-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.overlay-backdrop.active {
+    display: flex;
+    opacity: 1;
+}
+
+/* Overlay card styles - larger duplicate of element cards */
+.overlay-card {
+    width: 200px;
+    height: 250px;
+    perspective: 1000px;
+    cursor: pointer;
+}
+
+.overlay-card-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    transition: transform 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    transform-style: preserve-3d;
+    transform: scale(1.0);
+}
+
+.overlay-backdrop.flipped .overlay-card-inner {
+    transform: rotateY(180deg) scale(2.2);
+}
+
+.overlay-card-front, .overlay-card-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 20px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+.overlay-card-back {
+    transform: rotateY(180deg);
+    background-color: rgba(255, 255, 255, 0.95);
+    color: #333;
+    justify-content: flex-start;
+    padding: 15px;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.overlay-loading {
+    font-size: 14px;
+    color: #666;
+    font-style: italic;
+}
+
+/* Overlay card content styles */
+.overlay-atomic-number {
+    font-size: 16px;
+    text-align: left;
+    margin-bottom: 8px;
+    opacity: 0.8;
+}
+
+.overlay-symbol {
+    font-size: 48px;
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+.overlay-name {
+    font-size: 16px;
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+
+.overlay-atomic-mass {
+    font-size: 14px;
+    opacity: 0.8;
+}
+
+/* Overlay card back content */
+.overlay-card-back .overlay-atomic-number {
+    font-size: 16px;
+    margin-bottom: 8px;
+    text-align: left;
+}
+
+.overlay-card-back .overlay-symbol {
+    font-size: 48px;
+    margin-bottom: 8px;
+    text-align: center;
+}
+
+.overlay-card-back .overlay-name {
+    font-size: 18px;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+.overlay-card-back .overlay-atomic-mass {
+    font-size: 14px;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+.overlay-description {
+    font-size: 13px;
+    line-height: 1.4;
+    text-align: left;
+    color: #555;
+    margin-top: 10px;
+    max-height: 80px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 5px;
+    border-radius: 4px;
+    background-color: rgba(248, 248, 248, 0.8);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+/* Custom scrollbar for overlay description */
+.overlay-description::-webkit-scrollbar {
+    width: 4px;
+}
+
+.overlay-description::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 2px;
+}
+
+.overlay-description::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 2px;
+}
+
+.overlay-description::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 0, 0, 0.5);
+}
+
+/* Responsive design for mobile devices */
+@media (max-width: 768px) {
+    .periodic-table {
+        grid-template-columns: repeat(5, 1fr);
+    }
+    
+    .lantanideos-actinideos {
+        grid-template-columns: repeat(8, 1fr);
+    }
+    
+    /* Adjust overlay card size for mobile */
+    .overlay-card {
+        width: 160px;
+        height: 200px;
+    }
+    
+    .overlay-card-front, .overlay-card-back {
+        padding: 15px;
+    }
+    
+    .overlay-card-back {
+        padding: 12px;
+    }
+    
+    .overlay-description {
+        font-size: 12px;
+        max-height: 70px;
+        margin-top: 8px;
+    }
+    
+    .overlay-symbol {
+        font-size: 36px;
+    }
+    
+    .overlay-card-back .overlay-symbol {
+        font-size: 42px;
+    }
+    
+    .overlay-name {
+        font-size: 14px;
+    }
+    
+    .overlay-card-back .overlay-name {
+        font-size: 16px;
+    }
+    
+    /* Adjust scale for mobile - slightly smaller scale to fit screen better */
+    .overlay-backdrop.flipped .overlay-card-inner {
+        transform: rotateY(180deg) scale(1.8);
+    }
+}
