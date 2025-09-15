@@ -1,162 +1,162 @@
-# Periodic Table Web App - Backend
+# Aplicação Web da Tabela Periódica - Backend
 
-A FastAPI backend for a high school IT class project featuring an interactive periodic table with flip cards, element information, and future chat/AI integration.
+Um backend FastAPI para um projeto de aula de TI do ensino médio com uma tabela periódica interativa com cartões flip, informações dos elementos e futura integração de chat/IA.
 
-**Day 3.5 Update**: Now includes JWT-based authentication with role-based access control. Admin users can perform CRUD operations, while students can only read element data.
+**Atualização Dia 3.5**: Agora inclui autenticação baseada em JWT com controle de acesso baseado em funções. Usuários administradores podem realizar operações CRUD, enquanto estudantes podem apenas ler dados dos elementos.
 
-## 🚀 Quick Start
+## 🚀 Início Rápido
 
-### Prerequisites
-- Python 3.8 or higher
-- pip (Python package installer)
+### Pré-requisitos
+- Python 3.8 ou superior
+- pip (instalador de pacotes Python)
 
-### Installation & Setup
+### Instalação e Configuração
 
-1. **Clone the repository** (if not already done):
+1. **Clone o repositório** (se ainda não foi feito):
    ```bash
-   git clone <your-repo-url>
+   git clone <url-do-seu-repo>
    cd TabelaPeriodica
    ```
 
-2. **Install dependencies**:
+2. **Instale as dependências**:
    ```bash
    pip install -r requirements.txt
    ```
 
-3. **Run the development server**:
+3. **Execute o servidor de desenvolvimento**:
    ```bash
    uvicorn main:app --reload
    ```
 
-4. **Access the API**:
-   - API Base URL: http://localhost:8000
-   - Interactive API Docs: http://localhost:8000/docs
-   - Alternative Docs: http://localhost:8000/redoc
+4. **Acesse a API**:
+   - URL Base da API: http://localhost:8000
+   - Documentação Interativa da API: http://localhost:8000/docs
+   - Documentação Alternativa: http://localhost:8000/redoc
 
-### Database Setup
+### Configuração do Banco de Dados
 
-The SQLite database is automatically created and initialized when you first run the server. No additional setup required!
+O banco de dados SQLite é criado e inicializado automaticamente quando você executa o servidor pela primeira vez. Nenhuma configuração adicional necessária!
 
-- **Database file**: `periodic_table.db` (created in project directory)
-- **Sample data**: Automatically includes Hydrogen and Helium
-- **Admin user**: Automatically created (username: `admin`, password: `admin123`)
-- **Management**: Use `python manage_db.py` to add more elements
+- **Arquivo do banco**: `periodic_table.db` (criado no diretório do projeto)
+- **Dados de exemplo**: Inclui automaticamente Hidrogênio e Hélio
+- **Usuário admin**: Criado automaticamente (usuário: `admin`, senha: `admin123`)
+- **Gerenciamento**: Use `python manage_db.py` para adicionar mais elementos
 
-### Authentication Setup
+### Configuração de Autenticação
 
-The system automatically creates an admin user on first run:
-- **Username**: `admin`
-- **Password**: `admin123`
-- **Role**: `admin` (can perform all CRUD operations)
+O sistema cria automaticamente um usuário administrador na primeira execução:
+- **Nome de usuário**: `admin`
+- **Senha**: `admin123`
+- **Função**: `admin` (pode realizar todas as operações CRUD)
 
-You can register additional users via the `/register` endpoint.
+Você pode registrar usuários adicionais através do endpoint `/register`.
 
-## 📚 API Endpoints
+## 📚 Endpoints da API
 
-### Day 3.5 - Authentication + CRUD Operations
+### Dia 3.5 - Autenticação + Operações CRUD
 
-#### Public Endpoints (No Authentication Required)
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/` | API information and available endpoints |
-| GET | `/elements` | Get all elements from SQLite database |
-| GET | `/elements/{symbol}` | Get specific element by symbol (case-insensitive) |
-| POST | `/register` | Register a new user account |
-| POST | `/login` | Login and get JWT token |
-| GET | `/health` | Health check endpoint |
+#### Endpoints Públicos (Não Requer Autenticação)
+| Método | Endpoint | Descrição |
+|--------|----------|-----------|
+| GET | `/` | Informações da API e endpoints disponíveis |
+| GET | `/elements` | Obter todos os elementos do banco de dados SQLite |
+| GET | `/elements/{symbol}` | Obter elemento específico por símbolo (não diferencia maiúsculas/minúsculas) |
+| POST | `/register` | Registrar uma nova conta de usuário |
+| POST | `/login` | Fazer login e obter token JWT |
+| GET | `/health` | Endpoint de verificação de saúde |
 
-#### Admin-Only Endpoints (Requires JWT Token + Admin Role)
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/elements` | Create a new element (Admin only) |
-| PUT | `/elements/{symbol}` | Update an existing element (Admin only) |
-| DELETE | `/elements/{symbol}` | Delete an element by symbol (Admin only) |
+#### Endpoints Apenas para Admin (Requer Token JWT + Função Admin)
+| Método | Endpoint | Descrição |
+|--------|----------|-----------|
+| POST | `/elements` | Criar um novo elemento (Apenas Admin) |
+| PUT | `/elements/{symbol}` | Atualizar um elemento existente (Apenas Admin) |
+| DELETE | `/elements/{symbol}` | Excluir um elemento por símbolo (Apenas Admin) |
 
-### Example API Responses
+### Exemplos de Respostas da API
 
-**Get all elements** (`GET /elements`):
+**Obter todos os elementos** (`GET /elements`):
 ```json
 [
   {
     "id": 1,
     "symbol": "H",
-    "name": "Hydrogen",
+    "name": "Hidrogênio",
     "number": 1,
-    "info": "The lightest and most abundant element in the universe. Essential for water and organic compounds."
+    "info": "O elemento mais leve e abundante do universo. Essencial para água e compostos orgânicos."
   },
   {
     "id": 2,
     "symbol": "He",
-    "name": "Helium",
+    "name": "Hélio",
     "number": 2,
-    "info": "A noble gas that is lighter than air. Used in balloons and as a coolant for superconducting magnets."
+    "info": "Um gás nobre que é mais leve que o ar. Usado em balões e como refrigerante para ímãs supercondutores."
   }
 ]
 ```
 
-**Get specific element** (`GET /elements/H`):
+**Obter elemento específico** (`GET /elements/H`):
 ```json
 {
   "id": 1,
   "symbol": "H",
-  "name": "Hydrogen",
+  "name": "Hidrogênio",
   "number": 1,
-  "info": "The lightest and most abundant element in the universe. Essential for water and organic compounds."
+  "info": "O elemento mais leve e abundante do universo. Essencial para água e compostos orgânicos."
 }
 ```
 
-**Create element** (`POST /elements`):
+**Criar elemento** (`POST /elements`):
 ```json
 {
-  "message": "Element 'O' created successfully",
+  "message": "Elemento 'O' criado com sucesso",
   "element": {
     "id": 3,
     "symbol": "O",
-    "name": "Oxygen",
+    "name": "Oxigênio",
     "number": 8,
-    "info": "Essential for respiration and combustion. Makes up about 21% of Earth's atmosphere."
+    "info": "Essencial para respiração e combustão. Compõe cerca de 21% da atmosfera terrestre."
   }
 }
 ```
 
-**Update element** (`PUT /elements/O`):
+**Atualizar elemento** (`PUT /elements/O`):
 ```json
 {
-  "message": "Element 'O' updated successfully",
+  "message": "Elemento 'O' atualizado com sucesso",
   "element": {
     "id": 3,
     "symbol": "O",
-    "name": "Oxygen",
+    "name": "Oxigênio",
     "number": 8,
-    "info": "Updated description: Essential for life and combustion processes."
+    "info": "Descrição atualizada: Essencial para vida e processos de combustão."
   }
 }
 ```
 
-**Delete element** (`DELETE /elements/O`):
+**Excluir elemento** (`DELETE /elements/O`):
 ```json
 {
-  "message": "Element 'O' deleted successfully",
+  "message": "Elemento 'O' excluído com sucesso",
   "symbol": "O"
 }
 ```
 
-**Register user** (`POST /register`):
+**Registrar usuário** (`POST /register`):
 ```json
 {
-  "message": "User 'student1' registered successfully",
+  "message": "Usuário 'estudante1' registrado com sucesso",
   "user": {
     "id": 2,
-    "username": "student1",
+    "username": "estudante1",
     "role": "student"
   }
 }
 ```
 
-**Login user** (`POST /login`):
+**Login do usuário** (`POST /login`):
 ```json
 {
-  "message": "Login successful for user 'admin'",
+  "message": "Login realizado com sucesso para o usuário 'admin'",
   "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
   "token_type": "bearer",
   "expires_in": 1800,
@@ -168,22 +168,22 @@ You can register additional users via the `/register` endpoint.
 }
 ```
 
-## 🧪 Testing Authentication & CRUD Operations
+## 🧪 Testando Autenticação e Operações CRUD
 
-### Authentication Testing
+### Teste de Autenticação
 
-**1. Register a new user**:
+**1. Registrar um novo usuário**:
 ```bash
 curl -X POST http://localhost:8000/register \
   -H "Content-Type: application/json" \
   -d '{
-    "username": "student1",
-    "password": "password123",
+    "username": "estudante1",
+    "password": "senha123",
     "role": "student"
   }'
 ```
 
-**2. Login as admin**:
+**2. Fazer login como admin**:
 ```bash
 curl -X POST http://localhost:8000/login \
   -H "Content-Type: application/json" \
@@ -193,116 +193,116 @@ curl -X POST http://localhost:8000/login \
   }'
 ```
 
-**3. Save the JWT token from login response**:
+**3. Salvar o token JWT da resposta de login**:
 ```bash
-# Copy the "access_token" value from the login response
-# Example: TOKEN="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+# Copie o valor "access_token" da resposta de login
+# Exemplo: TOKEN="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
 ```
 
-### Public Endpoints (No Authentication)
+### Endpoints Públicos (Sem Autenticação)
 
-**4. Get all elements**:
+**4. Obter todos os elementos**:
 ```bash
 curl -X GET http://localhost:8000/elements
 ```
 
-**5. Get specific element**:
+**5. Obter elemento específico**:
 ```bash
 curl -X GET http://localhost:8000/elements/H
-curl -X GET http://localhost:8000/elements/he  # Case-insensitive
+curl -X GET http://localhost:8000/elements/he  # Não diferencia maiúsculas/minúsculas
 ```
 
-### Admin-Only Endpoints (Requires JWT Token)
+### Endpoints Apenas para Admin (Requer Token JWT)
 
-**6. Create new element (Admin only)**:
+**6. Criar novo elemento (Apenas Admin)**:
 ```bash
 curl -X POST http://localhost:8000/elements \
   -H "Content-Type: application/json" \
-  -H "Authorization: Bearer YOUR_JWT_TOKEN_HERE" \
+  -H "Authorization: Bearer SEU_TOKEN_JWT_AQUI" \
   -d '{
     "symbol": "O",
-    "name": "Oxygen",
+    "name": "Oxigênio",
     "number": 8,
-    "info": "Essential for respiration and combustion. Makes up about 21% of Earth'\''s atmosphere."
+    "info": "Essencial para respiração e combustão. Compõe cerca de 21% da atmosfera terrestre."
   }'
 ```
 
-**7. Update existing element (Admin only)**:
+**7. Atualizar elemento existente (Apenas Admin)**:
 ```bash
 curl -X PUT http://localhost:8000/elements/O \
   -H "Content-Type: application/json" \
-  -H "Authorization: Bearer YOUR_JWT_TOKEN_HERE" \
+  -H "Authorization: Bearer SEU_TOKEN_JWT_AQUI" \
   -d '{
-    "info": "Updated description: Essential for life and combustion processes."
+    "info": "Descrição atualizada: Essencial para vida e processos de combustão."
   }'
 ```
 
-**8. Delete element (Admin only)**:
+**8. Excluir elemento (Apenas Admin)**:
 ```bash
 curl -X DELETE http://localhost:8000/elements/O \
-  -H "Authorization: Bearer YOUR_JWT_TOKEN_HERE"
+  -H "Authorization: Bearer SEU_TOKEN_JWT_AQUI"
 ```
 
-### Error Testing
+### Teste de Erros
 
-**Try to create element without authentication**:
+**Tentar criar elemento sem autenticação**:
 ```bash
 curl -X POST http://localhost:8000/elements \
   -H "Content-Type: application/json" \
   -d '{
     "symbol": "O",
-    "name": "Oxygen",
+    "name": "Oxigênio",
     "number": 8,
-    "info": "This will fail - no token"
+    "info": "Isso falhará - sem token"
   }'
 ```
 
-**Try to create element with invalid token**:
+**Tentar criar elemento com token inválido**:
 ```bash
 curl -X POST http://localhost:8000/elements \
   -H "Content-Type: application/json" \
-  -H "Authorization: Bearer invalid_token" \
+  -H "Authorization: Bearer token_invalido" \
   -d '{
     "symbol": "O",
-    "name": "Oxygen",
+    "name": "Oxigênio",
     "number": 8,
-    "info": "This will fail - invalid token"
+    "info": "Isso falhará - token inválido"
   }'
 ```
 
-**Try to login with wrong credentials**:
+**Tentar fazer login com credenciais erradas**:
 ```bash
 curl -X POST http://localhost:8000/login \
   -H "Content-Type: application/json" \
   -d '{
     "username": "admin",
-    "password": "wrongpassword"
+    "password": "senhaerrada"
   }'
 ```
 
-**Try to register duplicate username**:
+**Tentar registrar nome de usuário duplicado**:
 ```bash
 curl -X POST http://localhost:8000/register \
   -H "Content-Type: application/json" \
   -d '{
     "username": "admin",
-    "password": "password123",
+    "password": "senha123",
     "role": "student"
   }'
 ```
 
-**Try to get non-existent element**:
+**Tentar obter elemento inexistente**:
 ```bash
 curl -X GET http://localhost:8000/elements/X
 ```
 
-## 🔗 Frontend Integration
+## 🔗 Integração com Frontend
 
-### JavaScript Fetch Examples
+### Exemplos de JavaScript Fetch
 
-**Authentication Helper**:
+**Auxiliar de Autenticação**:
 ```javascript
-// Store JWT token in localStorage
+// Armazenar token JWT no localStorage
 function setAuthToken(token) {
     localStorage.setItem('authToken', token);
 }
@@ -315,7 +315,7 @@ function clearAuthToken() {
     localStorage.removeItem('authToken');
 }
 
-// Login function
+// Função de login
 async function login(username, password) {
     try {
         const response = await fetch('http://localhost:8000/login', {
@@ -329,20 +329,20 @@ async function login(username, password) {
         if (response.ok) {
             const data = await response.json();
             setAuthToken(data.access_token);
-            console.log('Login successful:', data);
+            console.log('Login realizado com sucesso:', data);
             return data;
         } else {
             const error = await response.json();
-            console.error('Login failed:', error);
+            console.error('Falha no login:', error);
             throw new Error(error.detail);
         }
     } catch (error) {
-        console.error('Login error:', error);
+        console.error('Erro no login:', error);
         throw error;
     }
 }
 
-// Register function
+// Função de registro
 async function register(username, password, role = 'student') {
     try {
         const response = await fetch('http://localhost:8000/register', {
@@ -355,62 +355,62 @@ async function register(username, password, role = 'student') {
         
         if (response.ok) {
             const data = await response.json();
-            console.log('Registration successful:', data);
+            console.log('Registro realizado com sucesso:', data);
             return data;
         } else {
             const error = await response.json();
-            console.error('Registration failed:', error);
+            console.error('Falha no registro:', error);
             throw new Error(error.detail);
         }
     } catch (error) {
-        console.error('Registration error:', error);
+        console.error('Erro no registro:', error);
         throw error;
     }
 }
 ```
 
-**Public Endpoints (No Authentication Required)**:
+**Endpoints Públicos (Não Requer Autenticação)**:
 
-**Get all elements**:
+**Obter todos os elementos**:
 ```javascript
 async function fetchAllElements() {
     try {
         const response = await fetch('http://localhost:8000/elements');
         const elements = await response.json();
-        console.log('All elements:', elements);
+        console.log('Todos os elementos:', elements);
         return elements;
     } catch (error) {
-        console.error('Error fetching elements:', error);
+        console.error('Erro ao buscar elementos:', error);
     }
 }
 ```
 
-**Get specific element**:
+**Obter elemento específico**:
 ```javascript
 async function fetchElement(symbol) {
     try {
         const response = await fetch(`http://localhost:8000/elements/${symbol}`);
         if (response.ok) {
             const element = await response.json();
-            console.log('Element data:', element);
+            console.log('Dados do elemento:', element);
             return element;
         } else {
-            console.error('Element not found');
+            console.error('Elemento não encontrado');
         }
     } catch (error) {
-        console.error('Error fetching element:', error);
+        console.error('Erro ao buscar elemento:', error);
     }
 }
 ```
 
-**Admin-Only Endpoints (Requires Authentication)**:
+**Endpoints Apenas para Admin (Requer Autenticação)**:
 
-**Create new element (Admin only)**:
+**Criar novo elemento (Apenas Admin)**:
 ```javascript
 async function createElement(elementData) {
     const token = getAuthToken();
     if (!token) {
-        throw new Error('No authentication token. Please login first.');
+        throw new Error('Nenhum token de autenticação. Por favor, faça login primeiro.');
     }
     
     try {
@@ -425,42 +425,42 @@ async function createElement(elementData) {
         
         if (response.ok) {
             const result = await response.json();
-            console.log('Element created:', result);
+            console.log('Elemento criado:', result);
             return result;
         } else {
             const error = await response.json();
-            console.error('Error creating element:', error);
+            console.error('Erro ao criar elemento:', error);
             throw new Error(error.detail);
         }
     } catch (error) {
-        console.error('Error creating element:', error);
+        console.error('Erro ao criar elemento:', error);
         throw error;
     }
 }
 
-// Usage example:
-// First login as admin, then create element
+// Exemplo de uso:
+// Primeiro faça login como admin, depois crie elemento
 async function exampleCreateElement() {
     try {
         await login('admin', 'admin123');
         await createElement({
             symbol: "N",
-            name: "Nitrogen",
+            name: "Nitrogênio",
             number: 7,
-            info: "Makes up 78% of Earth's atmosphere. Essential for proteins and DNA."
+            info: "Compõe 78% da atmosfera terrestre. Essencial para proteínas e DNA."
         });
     } catch (error) {
-        console.error('Failed to create element:', error);
+        console.error('Falha ao criar elemento:', error);
     }
 }
 ```
 
-**Update element (Admin only)**:
+**Atualizar elemento (Apenas Admin)**:
 ```javascript
 async function updateElement(symbol, updateData) {
     const token = getAuthToken();
     if (!token) {
-        throw new Error('No authentication token. Please login first.');
+        throw new Error('Nenhum token de autenticação. Por favor, faça login primeiro.');
     }
     
     try {
@@ -475,37 +475,37 @@ async function updateElement(symbol, updateData) {
         
         if (response.ok) {
             const result = await response.json();
-            console.log('Element updated:', result);
+            console.log('Elemento atualizado:', result);
             return result;
         } else {
             const error = await response.json();
-            console.error('Error updating element:', error);
+            console.error('Erro ao atualizar elemento:', error);
             throw new Error(error.detail);
         }
     } catch (error) {
-        console.error('Error updating element:', error);
+        console.error('Erro ao atualizar elemento:', error);
         throw error;
     }
 }
 
-// Usage example:
-// First login as admin, then update element
+// Exemplo de uso:
+// Primeiro faça login como admin, depois atualize elemento
 async function exampleUpdateElement() {
     try {
         await login('admin', 'admin123');
-        await updateElement("N", { info: "Updated description for Nitrogen" });
+        await updateElement("N", { info: "Descrição atualizada para Nitrogênio" });
     } catch (error) {
-        console.error('Failed to update element:', error);
+        console.error('Falha ao atualizar elemento:', error);
     }
 }
 ```
 
-**Delete element (Admin only)**:
+**Excluir elemento (Apenas Admin)**:
 ```javascript
 async function deleteElement(symbol) {
     const token = getAuthToken();
     if (!token) {
-        throw new Error('No authentication token. Please login first.');
+        throw new Error('Nenhum token de autenticação. Por favor, faça login primeiro.');
     }
     
     try {
@@ -518,292 +518,292 @@ async function deleteElement(symbol) {
         
         if (response.ok) {
             const result = await response.json();
-            console.log('Element deleted:', result);
+            console.log('Elemento excluído:', result);
             return result;
         } else {
             const error = await response.json();
-            console.error('Error deleting element:', error);
+            console.error('Erro ao excluir elemento:', error);
             throw new Error(error.detail);
         }
     } catch (error) {
-        console.error('Error deleting element:', error);
+        console.error('Erro ao excluir elemento:', error);
         throw error;
     }
 }
 
-// Usage example:
-// First login as admin, then delete element
+// Exemplo de uso:
+// Primeiro faça login como admin, depois exclua elemento
 async function exampleDeleteElement() {
     try {
         await login('admin', 'admin123');
         await deleteElement("N");
     } catch (error) {
-        console.error('Failed to delete element:', error);
+        console.error('Falha ao excluir elemento:', error);
     }
 }
 ```
 
-## 📅 Development Roadmap
+## 📅 Roadmap de Desenvolvimento
 
-- **Day 1** ✅: Basic API with mock data
-- **Day 2** ✅: SQLite database integration with real periodic table data
-- **Day 3.0** ✅: Full CRUD operations for element management
-- **Day 3.5** ✅: JWT authentication with role-based access control (CURRENT)
-- **Day 4**: Chat/AI bot integration
-- **Day 5**: Integration testing and polish
-- **Day 6**: Presentation preparation
+- **Dia 1** ✅: API básica com dados simulados
+- **Dia 2** ✅: Integração com banco de dados SQLite com dados reais da tabela periódica
+- **Dia 3.0** ✅: Operações CRUD completas para gerenciamento de elementos
+- **Dia 3.5** ✅: Autenticação JWT com controle de acesso baseado em funções (ATUAL)
+- **Dia 4**: Integração de chat/bot de IA
+- **Dia 5**: Testes de integração e polimento
+- **Dia 6**: Preparação para apresentação
 
-## 🧪 Testing
+## 🧪 Testes
 
-### Automated Testing with pytest
+### Testes Automatizados com pytest
 
-The project includes comprehensive automated tests using pytest. All tests are organized in the `tests/` directory.
+O projeto inclui testes automatizados abrangentes usando pytest. Todos os testes estão organizados no diretório `tests/`.
 
-#### Running Tests
+#### Executando Testes
 
-**Run all tests**:
+**Executar todos os testes**:
 ```bash
 pytest -v
 ```
 
-**Run specific test modules**:
+**Executar módulos de teste específicos**:
 ```bash
-# Test database operations
+# Testar operações de banco de dados
 pytest tests/test_database.py -v
 
-# Test API endpoints
+# Testar endpoints da API
 pytest tests/test_elements.py -v
 
-# Test authentication system
+# Testar sistema de autenticação
 pytest tests/test_auth.py -v
 
-# Test user roles and permissions
+# Testar funções de usuário e permissões
 pytest tests/test_user_roles.py -v
 
-# Test edge cases and error handling
+# Testar casos extremos e tratamento de erros
 pytest tests/test_edge_cases.py -v
 ```
 
-**Run tests with coverage**:
+**Executar testes com cobertura**:
 ```bash
-# Install coverage tool
+# Instalar ferramenta de cobertura
 pip install pytest-cov
 
-# Run tests with coverage report
+# Executar testes com relatório de cobertura
 pytest --cov=. --cov-report=html
 
-# View coverage report
+# Visualizar relatório de cobertura
 open htmlcov/index.html
 ```
 
-#### Test Structure
+#### Estrutura dos Testes
 
-The test suite is organized into focused modules:
+A suíte de testes está organizada em módulos focados:
 
-- **`tests/conftest.py`**: Shared test fixtures and configuration
-- **`tests/test_database.py`**: SQLite database and SQLAlchemy model tests
-- **`tests/test_elements.py`**: Elements API endpoint tests (GET, POST, PUT, DELETE)
-- **`tests/test_auth.py`**: Authentication system tests (registration, login, JWT)
-- **`tests/test_user_roles.py`**: Role-based access control tests (admin vs student)
-- **`tests/test_edge_cases.py`**: Edge cases, boundary conditions, and error handling
+- **`tests/conftest.py`**: Configurações e fixtures compartilhadas dos testes
+- **`tests/test_database.py`**: Testes do banco de dados SQLite e modelos SQLAlchemy
+- **`tests/test_elements.py`**: Testes dos endpoints da API de elementos (GET, POST, PUT, DELETE)
+- **`tests/test_auth.py`**: Testes do sistema de autenticação (registro, login, JWT)
+- **`tests/test_user_roles.py`**: Testes de controle de acesso baseado em funções (admin vs estudante)
+- **`tests/test_edge_cases.py`**: Casos extremos, condições de limite e tratamento de erros
 
-#### Test Features
+#### Recursos dos Testes
 
-✅ **Database Tests**:
-- Model creation and validation
-- Unique constraints (symbol, username)
-- Helper function testing
-- Query operations
+✅ **Testes de Banco de Dados**:
+- Criação e validação de modelos
+- Restrições únicas (símbolo, nome de usuário)
+- Teste de funções auxiliares
+- Operações de consulta
 
-✅ **API Tests**:
-- All CRUD operations
-- Authentication requirements
-- Error handling
-- Case-insensitive searches
+✅ **Testes de API**:
+- Todas as operações CRUD
+- Requisitos de autenticação
+- Tratamento de erros
+- Buscas que não diferenciam maiúsculas/minúsculas
 
-✅ **Authentication Tests**:
-- Password hashing and verification
-- JWT token creation and validation
-- User registration and login
-- Token-based access control
+✅ **Testes de Autenticação**:
+- Hash e verificação de senhas
+- Criação e validação de tokens JWT
+- Registro e login de usuários
+- Controle de acesso baseado em tokens
 
-✅ **Role-Based Access Tests**:
-- Admin permissions (full CRUD access)
-- Student permissions (read-only access)
-- Unauthenticated access restrictions
+✅ **Testes de Controle de Acesso Baseado em Funções**:
+- Permissões de admin (acesso CRUD completo)
+- Permissões de estudante (acesso apenas leitura)
+- Restrições de acesso não autenticado
 
-✅ **Edge Case Tests**:
-- Boundary value testing
-- Invalid input handling
-- Concurrent operations
-- Error recovery
+✅ **Testes de Casos Extremos**:
+- Teste de valores de limite
+- Tratamento de entrada inválida
+- Operações concorrentes
+- Recuperação de erros
 
-#### Test Configuration
+#### Configuração dos Testes
 
-Tests use an in-memory SQLite database for isolation and speed. Each test runs in a clean environment with:
-- Fresh database tables
-- Sample data fixtures
-- Admin and student user accounts
-- JWT tokens for authentication testing
+Os testes usam um banco de dados SQLite em memória para isolamento e velocidade. Cada teste executa em um ambiente limpo com:
+- Tabelas de banco de dados frescas
+- Fixtures de dados de exemplo
+- Contas de usuário admin e estudante
+- Tokens JWT para teste de autenticação
 
-### Manual Testing
+### Testes Manuais
 
-#### Quick API Test
+#### Teste Rápido da API
 
-**Test basic functionality**:
+**Testar funcionalidade básica**:
 ```bash
-# Get all elements
+# Obter todos os elementos
 curl http://localhost:8000/elements
 
-# Get specific element
+# Obter elemento específico
 curl http://localhost:8000/elements/H
 
-# Register new user
+# Registrar novo usuário
 curl -X POST http://localhost:8000/register \
   -H "Content-Type: application/json" \
-  -d '{"username": "testuser", "password": "password123", "role": "student"}'
+  -d '{"username": "usuarioteste", "password": "senha123", "role": "student"}'
 
-# Login as admin
+# Fazer login como admin
 curl -X POST http://localhost:8000/login \
   -H "Content-Type: application/json" \
   -d '{"username": "admin", "password": "admin123"}'
 ```
 
-#### Interactive Testing
+#### Teste Interativo
 
-**Use the interactive API documentation**:
+**Usar a documentação interativa da API**:
 - Swagger UI: http://localhost:8000/docs
 - ReDoc: http://localhost:8000/redoc
 
-## 🛠️ Development Commands
+## 🛠️ Comandos de Desenvolvimento
 
 ```bash
-# Run development server with auto-reload
+# Executar servidor de desenvolvimento com recarregamento automático
 uvicorn main:app --reload
 
-# Run on specific host and port
+# Executar em host e porta específicos
 uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 
-# Run all tests
+# Executar todos os testes
 pytest -v
 
-# Run tests with coverage
+# Executar testes com cobertura
 pytest --cov=. --cov-report=html
 
-# Run specific test file
+# Executar arquivo de teste específico
 pytest tests/test_elements.py -v
 
-# Test basic API functionality (legacy)
+# Testar funcionalidade básica da API (legado)
 python tests/test_api.py
 
-# Test comprehensive CRUD operations (legacy)
+# Testar operações CRUD abrangentes (legado)
 python tests/test_crud.py
 
-# Install new dependencies
-pip install package-name
+# Instalar novas dependências
+pip install nome-do-pacote
 pip freeze > requirements.txt
 ```
 
-## 📁 Project Structure
+## 📁 Estrutura do Projeto
 
 ```
 TabelaPeriodica/
-├── main.py              # FastAPI application with authentication & CRUD
-├── models.py            # SQLAlchemy database models (Element, User)
-├── schemas.py           # Pydantic schemas for validation
-├── auth.py              # Authentication & JWT functions
-├── manage_db.py         # Database management script
-├── requirements.txt     # Python dependencies
-├── periodic_table.db    # SQLite database (created automatically)
-├── tests/               # Comprehensive test suite
-│   ├── conftest.py      # Shared test fixtures and configuration
-│   ├── test_database.py # Database and SQLAlchemy model tests
-│   ├── test_elements.py # Elements API endpoint tests
-│   ├── test_auth.py     # Authentication system tests
-│   ├── test_user_roles.py # Role-based access control tests
-│   ├── test_edge_cases.py # Edge cases and error handling tests
-│   ├── test_api.py      # Legacy basic API testing script
-│   └── test_crud.py     # Legacy CRUD testing script
-└── README.md           # This file
+├── main.py              # Aplicação FastAPI com autenticação e CRUD
+├── models.py            # Modelos de banco de dados SQLAlchemy (Element, User)
+├── schemas.py           # Schemas Pydantic para validação
+├── auth.py              # Funções de autenticação e JWT
+├── manage_db.py         # Script de gerenciamento do banco de dados
+├── requirements.txt     # Dependências Python
+├── periodic_table.db    # Banco de dados SQLite (criado automaticamente)
+├── tests/               # Suíte de testes abrangente
+│   ├── conftest.py      # Configurações e fixtures compartilhadas dos testes
+│   ├── test_database.py # Testes do banco de dados e modelos SQLAlchemy
+│   ├── test_elements.py # Testes dos endpoints da API de elementos
+│   ├── test_auth.py     # Testes do sistema de autenticação
+│   ├── test_user_roles.py # Testes de controle de acesso baseado em funções
+│   ├── test_edge_cases.py # Testes de casos extremos e tratamento de erros
+│   ├── test_api.py      # Script de teste básico da API (legado)
+│   └── test_crud.py     # Script de teste CRUD (legado)
+└── README.md           # Este arquivo
 ```
 
-## 🗄️ Database Management
+## 🗄️ Gerenciamento do Banco de Dados
 
-### Adding Elements
+### Adicionando Elementos
 
-Use the database management script to add more elements:
+Use o script de gerenciamento do banco de dados para adicionar mais elementos:
 
 ```bash
 python manage_db.py
 ```
 
-This interactive script allows you to:
-- Add sample elements (Lithium, Carbon, Nitrogen, Oxygen, Fluorine)
-- Add custom elements with your own data
-- List all elements in the database
-- Reset the database if needed
+Este script interativo permite:
+- Adicionar elementos de exemplo (Lítio, Carbono, Nitrogênio, Oxigênio, Flúor)
+- Adicionar elementos personalizados com seus próprios dados
+- Listar todos os elementos no banco de dados
+- Redefinir o banco de dados se necessário
 
-### Adding Elements Programmatically
+### Adicionando Elementos Programaticamente
 
-You can also add elements directly in Python:
+Você também pode adicionar elementos diretamente em Python:
 
 ```python
 from models import add_element
 
-# Add a new element
+# Adicionar um novo elemento
 add_element(
     symbol="Na",
-    name="Sodium", 
+    name="Sódio", 
     number=11,
-    info="Essential for nerve function and muscle contraction."
+    info="Essencial para função nervosa e contração muscular."
 )
 ```
 
-### Database Schema
+### Esquema do Banco de Dados
 
-The `Element` table has the following structure:
-- `id`: Primary key (auto-increment)
-- `symbol`: Chemical symbol (unique, e.g., "H", "He")
-- `name`: Full element name (e.g., "Hydrogen", "Helium")
-- `number`: Atomic number (e.g., 1, 2)
-- `info`: Description/information about the element
+A tabela `Element` tem a seguinte estrutura:
+- `id`: Chave primária (auto-incremento)
+- `symbol`: Símbolo químico (único, ex: "H", "He")
+- `name`: Nome completo do elemento (ex: "Hidrogênio", "Hélio")
+- `number`: Número atômico (ex: 1, 2)
+- `info`: Descrição/informações sobre o elemento
 
-## 🤝 Team Collaboration
+## 🤝 Colaboração em Equipe
 
-This backend is designed to work with the frontend team's HTML/CSS/JS implementation. The API provides clean JSON responses that can be easily consumed by JavaScript fetch calls.
+Este backend foi projetado para funcionar com a implementação HTML/CSS/JS da equipe de frontend. A API fornece respostas JSON limpas que podem ser facilmente consumidas por chamadas JavaScript fetch.
 
-**For Frontend Developers**: Use the JavaScript examples above to integrate with this API. The CORS middleware is configured to allow requests from any origin during development.
+**Para Desenvolvedores de Frontend**: Use os exemplos JavaScript acima para integrar com esta API. O middleware CORS está configurado para permitir solicitações de qualquer origem durante o desenvolvimento.
 
-## 🐛 Troubleshooting
+## 🐛 Solução de Problemas
 
-**Port already in use**:
+**Porta já em uso**:
 ```bash
-# Kill process using port 8000
+# Matar processo usando porta 8000
 lsof -ti:8000 | xargs kill -9
 
-# Or use a different port
+# Ou usar uma porta diferente
 uvicorn main:app --port 8001 --reload
 ```
 
-**Module not found errors**:
+**Erros de módulo não encontrado**:
 ```bash
-# Make sure you're in the project directory
+# Certifique-se de estar no diretório do projeto
 cd TabelaPeriodica
 
-# Reinstall dependencies
+# Reinstalar dependências
 pip install -r requirements.txt
 ```
 
-## 📝 Notes
+## 📝 Notas
 
-- This is Day 3.5 implementation with JWT authentication and role-based access control
-- CORS is configured for development (allows all origins)
-- Database is automatically created and initialized on first run
-- Case-insensitive element symbol search (e.g., "h", "H", "he", "He" all work)
-- Pydantic validation ensures data integrity
-- Duplicate symbol/atomic number prevention
-- JWT tokens expire after 30 minutes
-- Admin users can perform CRUD operations, students can only read
-- Default admin account: username="admin", password="admin123"
-- Use `python manage_db.py` to easily add more elements
-- SQLAlchemy 2.0.43 for Python 3.13 compatibility
+- Esta é a implementação do Dia 3.5 com autenticação JWT e controle de acesso baseado em funções
+- CORS está configurado para desenvolvimento (permite todas as origens)
+- O banco de dados é criado e inicializado automaticamente na primeira execução
+- Busca de símbolo de elemento que não diferencia maiúsculas/minúsculas (ex: "h", "H", "he", "He" funcionam)
+- Validação Pydantic garante integridade dos dados
+- Prevenção de símbolo/número atômico duplicado
+- Tokens JWT expiram após 30 minutos
+- Usuários admin podem realizar operações CRUD, estudantes podem apenas ler
+- Conta admin padrão: usuário="admin", senha="admin123"
+- Use `python manage_db.py` para facilmente adicionar mais elementos
+- SQLAlchemy 2.0.43 para compatibilidade com Python 3.13
