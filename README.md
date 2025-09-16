@@ -14,7 +14,7 @@ Um backend FastAPI para um projeto de aula de TI do ensino médio com uma tabela
 
 1. **Clone o repositório** (se ainda não foi feito):
    ```bash
-   git clone <url-do-seu-repo>
+   git clone https://github.com/EnderPico/TabelaPeriodica.git
    cd TabelaPeriodica
    ```
 
